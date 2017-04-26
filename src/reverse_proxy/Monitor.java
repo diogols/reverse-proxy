@@ -1,4 +1,4 @@
-package cc;
+package reverse_proxy;
 
 import java.net.InetAddress;
 
