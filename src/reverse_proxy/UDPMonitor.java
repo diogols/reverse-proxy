@@ -20,10 +20,10 @@ public class UDPMonitor {
         
         //debugging
         InetAddress udp_ip = InetAddress.getByName("localhost");
-        int udp_port =  5555;
+        int udp_port = 5556;
         InetAddress tcp_ip = InetAddress.getByName("localhost");
         int tcp_port = 80;
-        InetAddress server_ip = InetAddress.getByName(args[0]);
+        InetAddress server_ip = InetAddress.getByName("localhost");
         int server_port = 5555;
         try {
             DatagramSocket ds = new DatagramSocket(udp_port);
@@ -46,7 +46,7 @@ public class UDPMonitor {
             AutomaticThread at = new AutomaticThread(ds, tcp_ip, server_ip, server_port, counter);
             at.start();
             
-            int sequence_number = 0;
+            String receivedSequence;
             
             while(true)
             {
@@ -54,9 +54,8 @@ public class UDPMonitor {
                 receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 ds.receive(receivePacket);
                 
-                message = new String(receivePacket.getData());
-                sequence_number++;
-                message = "reply " + counter.get() + " " + sequence_number;
+                receivedSequence = new String(receivePacket.getData());
+                message = "reply " + counter.get() + " " + receivedSequence;
                  
                 sendData = new byte[1024];
                 sendData = message.getBytes();

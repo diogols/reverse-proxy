@@ -93,4 +93,15 @@ public class Table {
         }
         return list;
     }
+    
+    int getLastPacketSent(InetAddress ip) {
+        int r;
+        rl.get(ip).lock();
+        try {
+            r = table.get(ip).getLastSentPacket();
+        } finally {
+            rl.get(ip).unlock();
+        }
+        return r;
+    }
 }

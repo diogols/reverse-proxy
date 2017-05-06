@@ -36,7 +36,6 @@ public class LogicMonitoring {
                 String s;
                 System.out.println(message);
                 if(fields[0].equals("init")) {
-                    
                     try {
                         s = fields[1].split("/")[0];
                     } catch(NumberFormatException e) {

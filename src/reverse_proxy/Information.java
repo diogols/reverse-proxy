@@ -15,6 +15,7 @@ public class Information {
     private LocalTime time_sent, time_arrived;
     private int sent_packets, received_packets;
     private int last_received;
+    private LocalTime last_automatic;
     
     public Information(InetAddress udp_ip, int udp_port, InetAddress tcp_ip, int tcp_port)
     {
@@ -29,6 +30,7 @@ public class Information {
         sum_rtt = 0;
         received_packets = 0;
         last_received = 0;
+        last_automatic = LocalTime.now();
     }
 
     public int getNumberTCP() {
@@ -44,8 +46,10 @@ public class Information {
             }
         }
         if(sequence_number >= last_received) {
-            setNumberTCP(number_tcp);
             last_received = sequence_number;
+            if(time_arrived.isBefore(last_automatic)) {
+                setNumberTCP(number_tcp);
+            }
         }
                 System.out.println("time sent: " + time_sent + " - time received: " + time_arrived);
                 System.out.println("received packets: " + received_packets + " - sent packets:" + sent_packets);
@@ -54,6 +58,7 @@ public class Information {
     }
     
     public void receivedPacket(int number_tcp) {
+        last_automatic = LocalTime.now();
         setNumberTCP(number_tcp);
     }
     
@@ -94,5 +99,9 @@ public class Information {
     
     public float getPontuation() {
         return (float) (getRatioPacketLoss() + getRoundTripTime()/1000 + getNumberTCP()); 
+    }
+    
+    int getLastSentPacket() {
+        return sent_packets;
     }
 }

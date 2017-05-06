@@ -24,22 +24,24 @@ public class LogicMonitoringThread extends Thread {
     }
     
     public void run() {
-        String message = "signal"; // Não interessa conteúdo desta mensagem
+        String message; // Não interessa conteúdo desta mensagem
         DatagramPacket sendPacket;
         byte[] sendData;
-        sendData = new byte[1024];
-        sendData = message.getBytes();
+        
         
         while(true) {
             try {
             List<InetAddress> l = t.getAddresses();
             
             for(InetAddress address: l) {
-                            System.out.println("im here");
-
-                sendPacket = new DatagramPacket(sendData, sendData.length, address, 5555);
+                int toSend = t.getLastPacketSent(address) + 1; 
+                message = String.valueOf(toSend);
+                sendData = new byte[1024];
+                sendData = message.getBytes();
+                sendPacket = new DatagramPacket(sendData, sendData.length, address, 5556);
                 t.sentPacket(address);
                 ds.send(sendPacket);
+                System.out.println("at thread: " + message);
             }
             Thread.sleep(5000); // Manda-se probing de 5 em 5 segundos
             } catch(Exception e) {
