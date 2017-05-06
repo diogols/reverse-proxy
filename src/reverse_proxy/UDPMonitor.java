@@ -36,6 +36,9 @@ public class UDPMonitor {
             byte [] sendData;
             String message;
             
+            TCPServer tcps = new TCPServer(counter);
+            tcps.start();
+            
             message = "init " + tcp_ip.toString() + " " + tcp_port;
             sendData = new byte[1024];
             sendData = message.getBytes();

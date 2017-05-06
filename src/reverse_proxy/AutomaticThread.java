@@ -3,6 +3,7 @@ package reverse_proxy;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.time.LocalTime;
 
 public class AutomaticThread extends Thread{
     
@@ -24,11 +25,9 @@ public class AutomaticThread extends Thread{
         try  {
             byte [] sendData;
             DatagramPacket sendPacket;
-            //Message message;
             String message;
             while(true) {
-               // message = new Message("automatic", tcp_ip, counter.get());
-                message = "automatic " + counter.get();
+                message = "automatic " + counter.get() + " " + LocalTime.now(); //futuramente será utilizado para ter o número de tcp correto em Information
                 
                 sendData = new byte[1024];
                 sendData = message.getBytes();

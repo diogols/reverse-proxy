@@ -38,10 +38,9 @@ public class LogicMonitoringThread extends Thread {
                 message = String.valueOf(toSend);
                 sendData = new byte[1024];
                 sendData = message.getBytes();
-                sendPacket = new DatagramPacket(sendData, sendData.length, address, 5556);
+                sendPacket = new DatagramPacket(sendData, sendData.length, address, t.getUDP_Port(address));
                 t.sentPacket(address);
                 ds.send(sendPacket);
-                System.out.println("at thread: " + message);
             }
             Thread.sleep(5000); // Manda-se probing de 5 em 5 segundos
             } catch(Exception e) {

@@ -104,4 +104,15 @@ public class Table {
         }
         return r;
     }
+    
+    int getUDP_Port(InetAddress ip) {
+        int r;
+        rl.get(ip).lock();
+        try {
+            r = table.get(ip).getUDP_Port();
+        } finally {
+            rl.get(ip).unlock();
+        }
+        return r;
+    }
 }

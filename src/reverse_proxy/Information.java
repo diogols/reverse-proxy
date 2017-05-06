@@ -30,7 +30,7 @@ public class Information {
         sum_rtt = 0;
         received_packets = 0;
         last_received = 0;
-        last_automatic = LocalTime.now();
+        last_automatic = LocalTime.now(); //atualmente não serve para anda contudo posteriormente é a automatic thread q deve enviar a hora da message
     }
 
     public int getNumberTCP() {
@@ -98,10 +98,14 @@ public class Information {
     }
     
     public float getPontuation() {
-        return (float) (getRatioPacketLoss() + getRoundTripTime()/1000 + getNumberTCP()); 
+        return (float) (getRatioPacketLoss() + getRoundTripTime() + getNumberTCP()); 
     }
     
     int getLastSentPacket() {
         return sent_packets;
+    }
+    
+    InetAddress getTCP_Address() {
+        return tcp_ip;
     }
 }
