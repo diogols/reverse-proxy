@@ -37,6 +37,7 @@ public class FromExteriorToTCP extends Thread {
             
             String read;
             while((read = br.readLine()) != null) {
+                System.out.println("fromexteriortotcp: " + read);
                 pw.println(read);
             }
         } catch(IOException e) {

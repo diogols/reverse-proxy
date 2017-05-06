@@ -5,9 +5,12 @@
  */
 package reverse_proxy;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,7 +23,9 @@ public class ProxyLogic extends Thread {
         table = t;
     }
     
+    @Override
     public void run() {
+        
         try {
             ServerSocket ss = new ServerSocket(80);
             Socket s;
@@ -28,14 +33,15 @@ public class ProxyLogic extends Thread {
             while((s = ss.accept()) != null) {
                 Socket tcp = new Socket(getTCPServer(table), 80);
                 
-                FromExteriorToTCP fett = new FromExteriorToTCP(s, tcp);
-                fett.start();
-                FromTCPToExterior ttfe = new FromTCPToExterior(tcp, s);
-                ttfe.start();
+                FromExteriorToTCP fettcp = new FromExteriorToTCP(s, tcp);
+                fettcp.start();
+                FromTCPToExterior ftcpte = new FromTCPToExterior(tcp, s);
+                ftcpte.start();
             }
-        } catch(Exception e) {
-            System.err.println("An error ocurred at ProxyLogic.");
+        } catch (IOException ex) {
+            Logger.getLogger(ProxyLogic.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
     }
     
     private InetAddress getTCPServer(Table t) {
@@ -47,6 +53,7 @@ public class ProxyLogic extends Thread {
                 r = i.getTCP_Address();
             }
         }
+        System.out.println(r.toString());
         return r;
     }
 }

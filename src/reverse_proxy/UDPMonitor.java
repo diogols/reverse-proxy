@@ -7,23 +7,13 @@ import java.net.InetAddress;
 
 public class UDPMonitor {
     
-    public static void main(String args[]) throws Exception
-    {
-        /*
+    public static void main(String args[]) throws Exception {
+     
         InetAddress udp_ip = InetAddress.getByName("localhost");
-        int udp_port =  Integer.valueOf(args[0]);
-        InetAddress tcp_ip = InetAddress.getByName(args[1]);
-        int tcp_port =Integer.valueOf(args[2]);
-        InetAddress server_ip = InetAddress.getByName(args[3]);
-        int server_port = Integer.valueOf(args[4]);
-        */
-        
-        //debugging
-        InetAddress udp_ip = InetAddress.getByName("localhost");
-        int udp_port = 5556;
+        int udp_port = 5555;
         InetAddress tcp_ip = InetAddress.getByName("localhost");
         int tcp_port = 80;
-        InetAddress server_ip = InetAddress.getByName("localhost");
+        InetAddress server_ip = InetAddress.getByName(args[0]);
         int server_port = 5555;
         try {
             DatagramSocket ds = new DatagramSocket(udp_port);

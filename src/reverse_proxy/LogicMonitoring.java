@@ -34,7 +34,6 @@ public class LogicMonitoring extends Thread {
                     message = new String(receivePacket.getData());
                     fields = message.split(" ");
                     String s;
-                    System.out.println(message);
                     if(fields[0].equals("init")) {
                         try {
                             s = fields[1].split("/")[0];
@@ -42,8 +41,8 @@ public class LogicMonitoring extends Thread {
                             s = fields[1];
                         }
                         ip = InetAddress.getByName(fields[1].split("/")[0]);
-
-                        Information i = new Information(receivePacket.getAddress(), receivePacket.getPort(), ip, Integer.parseInt(fields[2].trim()));
+                        //onde está receivePacket.getAdress() no tcp devia ser ip
+                        Information i = new Information(receivePacket.getAddress(), receivePacket.getPort(), receivePacket.getAddress(), Integer.parseInt(fields[2].trim()));
                         table.put(receivePacket.getAddress(), i);
                        System.out.println(message);
                     } else if(fields[0].equals("reply")) {

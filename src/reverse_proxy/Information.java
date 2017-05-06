@@ -54,7 +54,7 @@ public class Information {
                 System.out.println("time sent: " + time_sent + " - time received: " + time_arrived);
                 System.out.println("received packets: " + received_packets + " - sent packets:" + sent_packets);
                 System.out.println("last received: " + last_received + " - sequence number:" + sequence_number);
-
+                System.out.println("pontuation: " + getPontuation() + "- tcp: " + number_tcp);    
     }
     
     public void receivedPacket(int number_tcp) {
@@ -98,7 +98,7 @@ public class Information {
     }
     
     public float getPontuation() {
-        return (float) (getRatioPacketLoss() + getRoundTripTime() + getNumberTCP()); 
+        return (float) (getRatioPacketLoss() + getRoundTripTime()/10000 + getNumberTCP()); 
     }
     
     int getLastSentPacket() {
