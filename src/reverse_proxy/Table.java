@@ -1,93 +1,96 @@
 package reverse_proxy;
 
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 
 public class Table {
     
-    private Map<InetAddress,ReentrantLock> locks; // Controlo da zona partilhada
-    private Map<InetAddress, InfoMonitor> monitors; // Key - IP do servidor TCP; Value - Estrutura InfoMonitor
+    private final ReentrantLock l;
+    private Map<InetAddress, ReentrantLock> rl;
+    private Map<InetAddress, Information> table;
     
     public Table()
     {
-        locks = new TreeMap<>();
-        monitors = new TreeMap<>();
+        l = new ReentrantLock();
+        rl = new HashMap<>();
+        table = new HashMap<>();
     }
     
-    public boolean containsTCP(InetAddress tcp)
-    { // Verifica se o end. TCP existe
-        boolean res;
-        try{
-            for(InetAddress addr: monitors.keySet())
-                locks.get(addr).lock();
-        
-            res = monitors.containsKey(tcp);
-        }
-        finally{
-            for(InetAddress addr: monitors.keySet())
-                locks.get(addr).unlock();
-        }
-        return res;
-    }
-    
-    public InfoMonitor getInfoMonitor(InetAddress tcp)
-    { 
-        InfoMonitor res;
-        
-        locks.get(tcp).lock();
+    public List<Information> getInformations() {
+        List<Information> r = new LinkedList();
+        l.lock();
         try {
-            res = monitors.get(tcp);
+            r.addAll(table.values());
         } finally {
-            locks.get(tcp).unlock();
+            l.unlock();
         }
-        
-        return res;
+        return r;
     }
     
-    public Map<InetAddress, InfoMonitor> getMonitors()
-    { // Retorna map de monitores
-        Map<InetAddress, InfoMonitor> res;
+    public Information getInformation(InetAddress udp_ip) { 
+        Information res;
         
-        try{
-            for(InetAddress addr: monitors.keySet())
-                locks.get(addr).lock();
-            
-            res = monitors;
-        }
-        finally{
-            for(InetAddress addr: monitors.keySet())
-                locks.get(addr).unlock();
-        }
-        
-        return res;
-    }
-   
-    public void add(InetAddress tcp, InfoMonitor info)
-    { // Adiciona-se end. TCP e info do monitor
-        try{
-            for(InetAddress addr: monitors.keySet())
-                locks.get(addr).lock();
-        
-            monitors.put(tcp, info);
-        }
-        finally{
-            for(InetAddress addr: monitors.keySet())
-                locks.get(addr).unlock();
-        }
-    }
-    
-    public void update(InetAddress tcp, int numtcp, int time_arrived)
-    { // Faz-se update da info do end. TCP passado como parâmetro
-        locks.get(tcp).lock();
+        rl.get(udp_ip).lock();
         try {
-            monitors.get(tcp).setNum_tcp(numtcp);
-            monitors.get(tcp).setTime_arrived(time_arrived);
+            res = table.get(udp_ip);
         } finally {
-            locks.get(tcp).unlock();
+            rl.get(udp_ip).unlock();
+        }
+        
+        return res;
+    }
+    
+    public void put(InetAddress udp_ip, Information i) { 
+        try {
+            l.lock();
+            ReentrantLock lock = new ReentrantLock();
+            rl.put(udp_ip, lock);
+            table.put(udp_ip, i);
+        } finally {
+            l.unlock();
         }
     }
-        
+    
+    public void receivedPacket(InetAddress udp_ip, int number_tcp, int sequence_number) {
+        rl.get(udp_ip).lock();
+        try {
+            table.get(udp_ip).receivedPacket(sequence_number, number_tcp);
+        } finally {
+            rl.get(udp_ip).unlock();
+        }
+    }
+    
+    public void receivedPacket(InetAddress udp_ip, int number_tcp) {
+        rl.get(udp_ip).lock();
+        try {
+            table.get(udp_ip).receivedPacket(number_tcp);
+        } finally {
+            rl.get(udp_ip).unlock();
+        }
+    }
+    
+    public void sentPacket(InetAddress udp_ip) {
+        rl.get(udp_ip).lock();
+        try {
+            table.get(udp_ip).sentPacket();
+        } finally {
+            rl.get(udp_ip).unlock();
+        }
+    }
+
+    List<InetAddress> getAddresses() {
+        List<InetAddress> list = new LinkedList();
+        l.lock();
+        try {
+            list.addAll(table.keySet());
+        } finally {
+            l.unlock();
+        }
+        return list;
+    }
 }
