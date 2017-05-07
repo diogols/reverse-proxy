@@ -115,4 +115,27 @@ public class Table {
         }
         return r;
     }
+    
+    public InetAddress getTCPServer() {
+        InetAddress r = null;
+        float pontuation = 999999;
+        l.lock();
+        try {
+            for(InetAddress address : table.keySet()) {
+                rl.get(address).lock();
+                try {
+                    if(table.get(address).getPontuation() < pontuation) {
+                        pontuation = table.get(address).getPontuation();
+                        r = table.get(address).getTCP_Address();
+                    }
+                } finally {
+                    rl.get(address).unlock();
+                }
+            }
+        } finally {
+            l.unlock();
+        }
+        System.out.println("choosen tcp: " + r);
+        return r;
+    }
 }

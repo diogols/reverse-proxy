@@ -25,6 +25,7 @@ public class TCPServerThread extends Thread {
         counter = c;
     }
     
+    @Override
     public void run() {
         try {
         InputStreamReader isr = new InputStreamReader(socket.getInputStream());
@@ -33,10 +34,11 @@ public class TCPServerThread extends Thread {
         OutputStreamWriter osr = new OutputStreamWriter(socket.getOutputStream());
         PrintWriter pw = new PrintWriter(osr, true);
         String read;
-        while((read = br.readLine()) != null) {
+        while((read = br.readLine()) != null && !socket.isClosed()) {
             // process
             pw.println(read);
         }
+        counter.decrement();
         } catch(IOException e) {
         }
     }

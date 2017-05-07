@@ -7,20 +7,17 @@ public class Counter {
     private final ReentrantLock rl;
     private int counter;
     
-    public Counter()
-    {
+    public Counter() {
         rl = new ReentrantLock();
         counter = 0;
     }
     
-    public Counter(int initial_value)
-    {
+    public Counter(int initial_value) {
         rl = new ReentrantLock();
         counter = initial_value;
     }
     
-    public void increment()
-    {
+    public void increment() {
         rl.lock();
         try {
             counter++;
@@ -29,8 +26,7 @@ public class Counter {
         }
     }
     
-    public void decrement()
-    {
+    public void decrement() {
         rl.lock();
         try {
             counter--;

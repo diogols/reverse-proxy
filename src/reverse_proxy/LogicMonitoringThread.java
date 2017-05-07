@@ -23,6 +23,7 @@ public class LogicMonitoringThread extends Thread {
         this.t = t;
     }
     
+    @Override
     public void run() {
         String message; // Não interessa conteúdo desta mensagem
         DatagramPacket sendPacket;

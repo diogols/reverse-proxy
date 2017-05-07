@@ -30,9 +30,7 @@ public class TCPServer extends Thread {
                 TCPServerThread tcpst = new TCPServerThread(s, counter);
                 tcpst.start();
             }
-        
         } catch(IOException e) {
-            
         }
     }
 }

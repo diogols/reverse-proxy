@@ -31,7 +31,7 @@ public class ProxyLogic extends Thread {
             Socket s;
             
             while((s = ss.accept()) != null) {
-                Socket tcp = new Socket(getTCPServer(table), 80);
+                Socket tcp = new Socket(table.getTCPServer(), 80);
                 
                 FromExteriorToTCP fettcp = new FromExteriorToTCP(s, tcp);
                 fettcp.start();
@@ -44,16 +44,5 @@ public class ProxyLogic extends Thread {
         
     }
     
-    private InetAddress getTCPServer(Table t) {
-        InetAddress r = null;
-        float pontuation = 9999;
-        for(Information i : table.getInformations()) {
-            if(i.getPontuation() < pontuation) {
-                pontuation = i.getPontuation();
-                r = i.getTCP_Address();
-            }
-        }
-        System.out.println(r.toString());
-        return r;
-    }
+    
 }

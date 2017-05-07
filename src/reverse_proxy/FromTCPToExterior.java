@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.Socket;
 
 /**
@@ -18,8 +17,8 @@ import java.net.Socket;
  * @author Admin
  */
 public class FromTCPToExterior extends Thread {
-    private Socket tcp;
-    private Socket exterior;
+    private final Socket tcp;
+    private final Socket exterior;
 
     public FromTCPToExterior(Socket tcp, Socket exterior) {
        this.tcp = tcp;
@@ -36,11 +35,11 @@ public class FromTCPToExterior extends Thread {
             PrintWriter pw = new PrintWriter(osr, true);
 
             String read;
-            while((read = br.readLine()) != null) {
+            while((read = br.readLine()) != null && !exterior.isClosed()) {
                 pw.println(read);
             }
+            tcp.close();
         } catch(IOException e) {
-
         }
     }
 }

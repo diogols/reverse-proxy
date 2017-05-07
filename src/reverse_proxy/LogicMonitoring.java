@@ -34,21 +34,27 @@ public class LogicMonitoring extends Thread {
                     message = new String(receivePacket.getData());
                     fields = message.split(" ");
                     String s;
-                    if(fields[0].equals("init")) {
-                        try {
-                            s = fields[1].split("/")[0];
-                        } catch(NumberFormatException e) {
-                            s = fields[1];
-                        }
-                        ip = InetAddress.getByName(fields[1].split("/")[0]);
-                        //onde está receivePacket.getAdress() no tcp devia ser ip
-                        Information i = new Information(receivePacket.getAddress(), receivePacket.getPort(), receivePacket.getAddress(), Integer.parseInt(fields[2].trim()));
-                        table.put(receivePacket.getAddress(), i);
-                       System.out.println(message);
-                    } else if(fields[0].equals("reply")) {
-                        table.receivedPacket(receivePacket.getAddress(), Integer.parseInt(fields[1].trim()), Integer.parseInt(fields[2].trim()));
-                    } else if(fields[0].equals("automatic")) {
-                        table.receivedPacket(receivePacket.getAddress(), Integer.parseInt(fields[1].trim()));
+                    switch (fields[0]) {
+                        case "init":
+                            try {
+                                s = fields[1].split("/")[0];
+                            } catch(NumberFormatException e) {
+                                s = fields[1];
+                            }
+                            ip = InetAddress.getByName(fields[1].split("/")[0]);
+                            //onde está receivePacket.getAdress() no tcp devia ser ip
+                            Information i = new Information(receivePacket.getAddress(), receivePacket.getPort(), receivePacket.getAddress(), Integer.parseInt(fields[2].trim()));
+                            table.put(receivePacket.getAddress(), i);
+                            System.out.println(message);
+                            break;
+                        case "reply":
+                            table.receivedPacket(receivePacket.getAddress(), Integer.parseInt(fields[1].trim()), Integer.parseInt(fields[2].trim()));
+                            break;
+                        case "automatic":
+                            table.receivedPacket(receivePacket.getAddress(), Integer.parseInt(fields[1].trim()));
+                            break;
+                        default:
+                            break;
                     }
                 }
         } catch(IOException | NumberFormatException e) {

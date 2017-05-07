@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.Socket;
 
 /**
@@ -26,7 +25,7 @@ public class FromExteriorToTCP extends Thread {
         this.tcp = tcp;
     }
     
-    //neste momento so envia nunca recebe
+    @Override
     public void run() {
         try {
             InputStreamReader isr = new InputStreamReader(exterior.getInputStream());
@@ -36,10 +35,10 @@ public class FromExteriorToTCP extends Thread {
             PrintWriter pw = new PrintWriter(osr, true);
             
             String read;
-            while((read = br.readLine()) != null) {
-                System.out.println("fromexteriortotcp: " + read);
+            while((read = br.readLine()) != null && !exterior.isClosed()) {
                 pw.println(read);
             }
+            tcp.close();
         } catch(IOException e) {
 
         }
