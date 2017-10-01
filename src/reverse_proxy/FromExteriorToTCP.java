@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package reverse_proxy;
 
 import java.io.BufferedReader;
@@ -13,8 +8,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
- *
- * @author Admin
+ * Classe que é responsável por fazer a comunicação com o cliente para o servidor tcp.
  */
 public class FromExteriorToTCP extends Thread {
     Socket exterior;
@@ -35,12 +29,13 @@ public class FromExteriorToTCP extends Thread {
             PrintWriter pw = new PrintWriter(osr, true);
             
             String read;
+            // Enquanto o socket do cliente estiver aberto redireccionar para o servidor tcp.
             while((read = br.readLine()) != null && !exterior.isClosed()) {
                 pw.println(read);
             }
+            // Avisar o servidor tcp de que terminou a conexão atual.
             tcp.close();
         } catch(IOException e) {
-
         }
     }
     

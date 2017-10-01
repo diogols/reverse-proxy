@@ -1,18 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package reverse_proxy;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.List;
 
 /**
- *
- * @author Admin
+ * Classe responsável por fazer probing request periódico a cada um dos servidores UDP.
  */
 public class LogicMonitoringThread extends Thread {
     private Table t;
@@ -25,27 +20,27 @@ public class LogicMonitoringThread extends Thread {
     
     @Override
     public void run() {
-        String message; // Não interessa conteúdo desta mensagem
+        String message;
         DatagramPacket sendPacket;
         byte[] sendData;
         
-        
         while(true) {
             try {
-            List<InetAddress> l = t.getAddresses();
-            
-            for(InetAddress address: l) {
-                int toSend = t.getLastPacketSent(address) + 1; 
-                message = String.valueOf(toSend);
-                sendData = new byte[1024];
-                sendData = message.getBytes();
-                sendPacket = new DatagramPacket(sendData, sendData.length, address, t.getUDP_Port(address));
-                t.sentPacket(address);
-                ds.send(sendPacket);
-            }
-            Thread.sleep(5000); // Manda-se probing de 5 em 5 segundos
-            } catch(Exception e) {
-                
+                List<InetAddress> l = t.getAddresses();
+
+                for(InetAddress address: l) {
+                    // Para cada monitor enviará o número de sequência do pacote.
+                    int toSend = t.getLastPacketSent(address) + 1; 
+                    message = String.valueOf(toSend);
+                    sendData = new byte[1024];
+                    sendData = message.getBytes();
+                    sendPacket = new DatagramPacket(sendData, sendData.length, address, t.getUDP_Port(address));
+                    t.sentPacket(address);
+                    ds.send(sendPacket);
+                }
+                Thread.sleep(2000); // Manda-se probing a cada 2 segundos.
+            } catch(IOException | InterruptedException e) {
+                System.err.println("An error ocurred at LogicMonitoringThread.");
             }
         }
     }

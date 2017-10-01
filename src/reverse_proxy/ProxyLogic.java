@@ -1,20 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package reverse_proxy;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
- *
- * @author Admin
+ * Classe responsável por aceitar conexões de clientes.
  */
 public class ProxyLogic extends Thread {
     Table table;
@@ -25,12 +16,13 @@ public class ProxyLogic extends Thread {
     
     @Override
     public void run() {
-        
         try {
             ServerSocket ss = new ServerSocket(80);
             Socket s;
             
+            // Ciclo responsável por aceitar conexões.
             while((s = ss.accept()) != null) {
+                // Ao aceitar conexão de um novo cliente deve-se obter o melhor servidor TCP.
                 Socket tcp = new Socket(table.getTCPServer(), 80);
                 
                 FromExteriorToTCP fettcp = new FromExteriorToTCP(s, tcp);
@@ -38,11 +30,8 @@ public class ProxyLogic extends Thread {
                 FromTCPToExterior ftcpte = new FromTCPToExterior(tcp, s);
                 ftcpte.start();
             }
-        } catch (IOException ex) {
-            Logger.getLogger(ProxyLogic.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException e) {
+            System.err.println("An error ocurred at ProxyLogic.");
         }
-        
     }
-    
-    
 }

@@ -5,17 +5,20 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+/**
+ * Classe responsável por monitorizar um servidor TCP. 
+ */
 public class UDPMonitor {
     
-    public static void main(String args[]) throws Exception {
-     
-        InetAddress udp_ip = InetAddress.getByName("localhost");
+    public static void main(String args[]) {
+        
         int udp_port = 5555;
-        InetAddress tcp_ip = InetAddress.getByName("localhost");
-        int tcp_port = 80;
-        InetAddress server_ip = InetAddress.getByName(args[0]);
         int server_port = 5555;
+        int tcp_port = 80;
         try {
+            // Deve receber como parâmetro o endereço do servidor.
+            InetAddress server_ip = InetAddress.getByName(args[0]);
+        
             DatagramSocket ds = new DatagramSocket(udp_port);
             
             Counter counter = new Counter(0);
@@ -26,23 +29,24 @@ public class UDPMonitor {
             byte [] sendData;
             String message;
             
+            // Lança o servidor.
             TCPServer tcps = new TCPServer(counter);
             tcps.start();
             
-            message = "init " + tcp_ip.toString() + " " + tcp_port;
+            // O PDU inicial é apenas uma mensagem a indicar que se trata de uma inicialização mais a porta do servidor TCP.
+            message = "init " + tcp_port;
             sendData = new byte[1024];
             sendData = message.getBytes();
             sendPacket = new DatagramPacket(sendData, sendData.length, server_ip, server_port);
             ds.send(sendPacket);
             
-             // lançar tcp com counter
-            AutomaticThread at = new AutomaticThread(ds, tcp_ip, server_ip, server_port, counter);
+            // Lança a thread de probing periódico.
+            AutomaticThread at = new AutomaticThread(ds, server_ip, server_port, counter);
             at.start();
             
             String receivedSequence;
             
-            while(true)
-            {
+            while(true) {
                 receiveData = new byte[1024];
                 receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 ds.receive(receivePacket);

@@ -2,6 +2,10 @@ package reverse_proxy;
 
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Classe contador que permite o acesso a uma variável partilhada apresentando exclusão mútua.
+ * Está preparada para ser utilizada num contexto multithreaded.
+ */
 public class Counter {
     
     private final ReentrantLock rl;

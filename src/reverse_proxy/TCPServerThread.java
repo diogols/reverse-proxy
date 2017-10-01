@@ -1,11 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package reverse_proxy;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -13,8 +10,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
- *
- * @author Admin
+ * Classe responsável por tratar de um pedido individual com um cliente.
  */
 public class TCPServerThread extends Thread {
     private final Socket socket;
@@ -28,17 +24,27 @@ public class TCPServerThread extends Thread {
     @Override
     public void run() {
         try {
-        InputStreamReader isr = new InputStreamReader(socket.getInputStream());
-        BufferedReader br = new BufferedReader(isr);
+            InputStreamReader isr = new InputStreamReader(socket.getInputStream());
+            BufferedReader br = new BufferedReader(isr);
+
+            OutputStreamWriter osr = new OutputStreamWriter(socket.getOutputStream());
+            PrintWriter pw = new PrintWriter(osr, true);
             
-        OutputStreamWriter osr = new OutputStreamWriter(socket.getOutputStream());
-        PrintWriter pw = new PrintWriter(osr, true);
-        String read;
-        while((read = br.readLine()) != null && !socket.isClosed()) {
-            // process
-            pw.println(read);
-        }
-        counter.decrement();
+            try {
+                FileReader fr = new FileReader(br.readLine());
+                BufferedReader brf = new BufferedReader(fr);
+                for(String read; (read = brf.readLine()) != null && br.readLine() != null;) {
+                    pw.println(read);
+                }
+                pw.println("EOF");
+            }catch(FileNotFoundException e) {
+                pw.println("File not found.");
+                pw.println("EOF");
+            } finally {
+                socket.close();
+                // Ao terminar a conexão com o cliente, o contador é decrementado.
+                counter.decrement();
+            }
         } catch(IOException e) {
         }
     }

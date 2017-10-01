@@ -3,8 +3,11 @@ package reverse_proxy;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 
+/**
+ * Classe responsável por monitorizar todos os monitores UDP.
+ * Esta toma ações quando recebe um pacote de qualquer monitor UDP.
+ */
 public class LogicMonitoring extends Thread { 
     private Table table;
     
@@ -14,7 +17,7 @@ public class LogicMonitoring extends Thread {
     
     @Override
     public void run() {   
-            int my_port = 5555; /* Integer.valueOf(args[0]); */
+            int my_port = 5555;
             
             byte[] receiveData;
             DatagramPacket receivePacket;
@@ -22,7 +25,6 @@ public class LogicMonitoring extends Thread {
                 DatagramSocket ds = new DatagramSocket(my_port);
                 String message;
                 String fields[];
-                InetAddress ip;
                 
                 LogicMonitoringThread lmt = new LogicMonitoringThread(ds, table);
                 lmt.start();
@@ -35,21 +37,17 @@ public class LogicMonitoring extends Thread {
                     fields = message.split(" ");
                     String s;
                     switch (fields[0]) {
+                        // Quando recebe uma mensagem init deve adicionar uma nova entrada na tabela.
                         case "init":
-                            try {
-                                s = fields[1].split("/")[0];
-                            } catch(NumberFormatException e) {
-                                s = fields[1];
-                            }
-                            ip = InetAddress.getByName(fields[1].split("/")[0]);
-                            //onde está receivePacket.getAdress() no tcp devia ser ip
-                            Information i = new Information(receivePacket.getAddress(), receivePacket.getPort(), receivePacket.getAddress(), Integer.parseInt(fields[2].trim()));
+                            Information i = new Information(receivePacket.getAddress(), receivePacket.getPort(), Integer.parseInt(fields[1].trim()));
                             table.put(receivePacket.getAddress(), i);
                             System.out.println(message);
                             break;
+                        // Como se trata de uma resposta a pedido de probing deve utilizar o método apropriado de Table.
                         case "reply":
                             table.receivedPacket(receivePacket.getAddress(), Integer.parseInt(fields[1].trim()), Integer.parseInt(fields[2].trim()));
                             break;
+                        // Como se trata de probing periódico do monitor UDP apenas apresenta o número de conexões TCP.
                         case "automatic":
                             table.receivedPacket(receivePacket.getAddress(), Integer.parseInt(fields[1].trim()));
                             break;
@@ -58,7 +56,7 @@ public class LogicMonitoring extends Thread {
                     }
                 }
         } catch(IOException | NumberFormatException e) {
-
+            System.out.println("An error ocurred at LogicMonitoring.");
         }
     }
 }
