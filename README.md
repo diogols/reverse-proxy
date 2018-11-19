@@ -1,4 +1,4 @@
-# reverse_proxy
+# reverse-proxy
 This is a project made under Computer Communication course.
 The goal of the project is to provide a reverse proxy meaning that a front-end server can choose the best candidate
 to attend the request from a client. The back-end server is monitored via UDP while the clients connect to it via TCP.
